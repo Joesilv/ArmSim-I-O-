@@ -6,18 +6,9 @@
 	.equ	SWI_Exit, 0x11		@ stop executing
 	.equ	SWI_Close, 0x68		@ closes file handle
 	
+	@ ============================  System Time Saved  ==============================
 	swi		SWI_Timer			@R0 has begining execution time
 			MOV R6,R0
-	LDR		R3,=1				@Hold value of multiplied, start at 1
-	MOV		R4,#5
-
-loop:
-	MUL 	R5,R3,R4			@ Multiply R3 and R4 save to R5
-	MOV 	R3,R5				@ Move the result to make room for next loop.
-	SUB		R4,R4,#1			@ Decriment loop by 1
-	CMP		R4,#1				@ Break when loop is 1
-	BNE		loop				@ Branch to Loop Above
-	
 	@ ============================  Open File for Output  ===========================
 	
 	LDR 	R0,=OutFileName		@ set Name for output file
@@ -37,7 +28,25 @@ loop:
 	LDR 	R0,=OutFileHandle	
 	LDR		R0,[R0]				
 	LDR		R1,=HeaderLines		
-	swi		SWI_PrStr			
+	swi		SWI_PrStr
+	
+	BL		Tabover
+	@ ==========================  Factorial Loop ===========================================
+	LDR		R3,=1				@Hold value of multiplied, start at 1
+	MOV		R4,#5
+	
+	LDR 	R0,=OutFileHandle	
+	LDR		R0,[R0]				
+	MOV 	R1,R4				
+	swi  	SWI_PrInt
+
+loop:
+	MUL 	R5,R3,R4			@ Multiply R3 and R4 save to R5
+	MOV 	R3,R5				@ Move the result to make room for next loop.
+	SUB		R4,R4,#1			@ Decriment loop by 1
+	CMP		R4,#1				@ Break when loop is 1
+	BNE		loop				@ Branch to Loop Above
+	
 	@ ===========================  Write to Output File - Factorial  ========================
 	
 	BL		Tabover				@ Branch to function that adds tabs
@@ -85,8 +94,8 @@ NL:				.asciz			"\n"
 OutFileName:	.asciz 			"Outfile1.txt"
 OutFileErrorMsg:	.asciz		"Unable to open output file \n"
 	.align
-HeaderMsg:			.asciz			"\n\t\tNumber\t\tFactorial\t\tTime Elapsed \r\n"
-HeaderLines:		.asciz			"\t\t------\t\t---------\t\t------------\r\n"
+HeaderMsg:			.asciz			"\n\t\tNumber\t\tFactorial\tTime Elapsed \r\n"
+HeaderLines:		.asciz			"\t\t------\t\t---------\t------------\r\n"
 InsertTabs:			.asciz			"\t\t"
 OutFileHandle:	.word			0
 	

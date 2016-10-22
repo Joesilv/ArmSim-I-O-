@@ -1,4 +1,4 @@
 
-		Number		Factorial		Time Elapsed 
-		------		---------		------------
-		120		3828
+		Number		Factorial	Time Elapsed 
+		------		---------	------------
+		5		120		0
