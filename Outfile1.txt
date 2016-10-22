@@ -1,3 +1,4 @@
 
-	Number		Factorial		Time Elapsed 
-	------		---------		------------
+		Number		Factorial		Time Elapsed 
+		------		---------		------------
+		120

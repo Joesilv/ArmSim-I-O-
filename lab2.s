@@ -27,23 +27,23 @@ loop:
 	LDR		R1,=OutFileHandle	@ load output file handle
 	STR		R0,[R1]				@ save the file handle
 	
-	@ ============================  Write To Output File  ==========================
+	@ ============================  Write To Output File - Header  ==========================
 	
 	LDR 	R0,=OutFileHandle	
 	LDR		R0,[R0]				@r0 = file handle
 	LDR		R1,=HeaderMsg		@r1 = address of String
 	swi		SWI_PrStr			@write string to file
 	
-	MOV		R0,#Stdout				
-	LDR		R1, =NL				@ Print Line
-	swi		SWI_PrStr
-	
 	LDR 	R0,=OutFileHandle	
 	LDR		R0,[R0]				
 	LDR		R1,=HeaderLines		
 	swi		SWI_PrStr			
+	@ ===========================  Write to Output File - Numbers  ========================
 	
-	MOV 	R0,#Stdout			@ Set mode to output
+	BL		Tabover				@ Branch to function that adds tabs
+	
+	LDR 	R0,=OutFileHandle	
+	LDR		R0,[R0]				@r0 = file handle
 	MOV 	R1,R3				@ Move total to R1 for output
 	swi  	SWI_PrInt			@ Print
 	
@@ -65,9 +65,16 @@ loop:
 	
 	
 	@ ================================  Branches  =====================================
-	
 Exit:
-	swi		SWI_Exit			@Stop Executing
+	swi		SWI_Exit			@Stop Executing	
+	
+Tabover:
+	LDR 	R0,=OutFileHandle	
+	LDR		R0,[R0]				@r0 = file handle
+	LDR		R1,=InsertTabs		@r1 = address of String
+	swi		SWI_PrStr			@write string to file
+	MOV		PC,R14				@go back to reading code above
+	
 	
 OutFileError:
 	MOV 	R0, #Stdout
@@ -79,8 +86,9 @@ NL:				.asciz			"\n"
 OutFileName:	.asciz 			"Outfile1.txt"
 OutFileErrorMsg:	.asciz		"Unable to open output file \n"
 	.align
-HeaderMsg:			.asciz			"\n\tNumber\t\tFactorial\t\tTime Elapsed \r\n"
-HeaderLines:		.asciz			"\t------\t\t---------\t\t------------\n"
+HeaderMsg:			.asciz			"\n\t\tNumber\t\tFactorial\t\tTime Elapsed \r\n"
+HeaderLines:		.asciz			"\t\t------\t\t---------\t\t------------\r\n"
+InsertTabs:			.asciz			"\t\t"
 OutFileHandle:	.word			0
 	
 	
