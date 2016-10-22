@@ -4,6 +4,7 @@
 	.equ	SWI_PrStr, 0x69		@ Print a string
 	.equ	SWI_Open, 0x66		@ Open a file
 	.equ	SWI_Exit, 0x11		@ stop executing
+	.equ	SWI_Close, 0x68		@ closes file handle
 	
 	swi		SWI_Timer			@R0 has begining execution time
 			MOV R6,R0
@@ -26,6 +27,11 @@ loop:
 	LDR		R1,=OutFileHandle	@ load output file handle
 	STR		R0,[R1]				@ save the file handle
 	
+	LDR 	R0,=OutFileHandle	
+	LDR		R0,[R0]				@r0 = file handle
+	LDR		R1,=HeaderMsg		@r1 = address of String
+	swi		SWI_PrStr			@write string to file
+	
 	MOV 	R0,#Stdout			@ Set mode to output
 	MOV 	R1,R3				@ Move total to R1 for output
 	swi  	SWI_PrInt			@ Print
@@ -41,6 +47,12 @@ loop:
 	MOV		R1,R3
 	swi		SWI_PrInt			@Print Integer
 	
+	@ ================================  Close a file   ================================
+	LDR		r0,=OutFileHandle
+	LDR		r0,[r0]
+	swi		SWI_Close
+	
+	
 	@ ================================  Branches  =====================================
 	
 Exit:
@@ -52,10 +64,11 @@ OutFileError:
 	swi		SWI_PrStr
 	bal		Exit				@Give up, go to end
 	
-NL:				.asciz			"\n"			@new line
+NL:				.asciz			"\n"			
 OutFileName:	.asciz 			"Outfile1.txt"
-OutFileErrorMsg:	.asciz			"Unable to open output file \n"
+OutFileErrorMsg:	.asciz		"Unable to open output file \n"
 	.align
+HeaderMsg:			.asciz			"\n\tNumber\t\tFactorial\t\tTime Elapsed"
 OutFileHandle:	.word			0
 	
 	

@@ -1,0 +1,2 @@
+
+	Number		Factorial		Time Elapsed
