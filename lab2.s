@@ -31,7 +31,25 @@
 	swi		SWI_PrStr
 	
 	BL		Tabover
+	
+	@ =========================  Read File  ===================================================
+	
+	LDR		R0,=InFileName		@ Set name for input file
+	MOV		R1,#0				@ mode is input
+	swi		SWI_Open			@ Open file for inout
+	bcs 	InFileError			@ if error
+	LDR		R1,=InFileHandle
+	STR		R0,[R1]
+	
+	LDR 	R0,=InFileHandle
+	LDR 	R0,[r0]
+	swi		0x6c				@RdInt
+	bcs		ReadError			@if error
+	
+	@----- The integer is now in r0---
+	
 	@ ==========================  Factorial Loop ===========================================
+	
 	LDR		R3,=1				@Hold value of multiplied, start at 1
 	MOV		R4,#5
 	
@@ -67,6 +85,10 @@ loop:
 	swi		SWI_PrInt			@Print Integer
 	
 	@ ================================  Close a file   ================================
+	LDR		r0,=InFileHandle
+	LDR		r0,[r0]
+	swi		SWI_Close
+	
 	LDR		r0,=OutFileHandle
 	LDR		r0,[r0]
 	swi		SWI_Close
@@ -83,6 +105,11 @@ Tabover:
 	swi		SWI_PrStr			@write string to file
 	MOV		PC,R14				@go back to reading code above
 	
+ReadError:
+	MOV 	R0, #Stdout
+	LDR 	R1, =InFileError
+	swi		SWI_PrStr
+	bal		Exit				@Give up, go to end
 	
 OutFileError:
 	MOV 	R0, #Stdout
@@ -94,6 +121,10 @@ NL:				.asciz			"\n"
 OutFileName:	.asciz 			"Outfile1.txt"
 OutFileErrorMsg:	.asciz		"Unable to open output file \n"
 	.align
+InFileName:		.asciz			"Infile1.txt"
+InFileError:	.asciz			"Unable to open input file\n"
+	.align
+InFileHandle:	.word			0
 HeaderMsg:			.asciz			"\n\t\tNumber\t\tFactorial\tTime Elapsed \r\n"
 HeaderLines:		.asciz			"\t\t------\t\t---------\t------------\r\n"
 InsertTabs:			.asciz			"\t\t"
