@@ -18,7 +18,7 @@ loop:
 	CMP		R4,#1				@ Break when loop is 1
 	BNE		loop				@ Branch to Loop Above
 	
-	@ ============================  Start Writing to Output  ===========================
+	@ ============================  Open File for Output  ===========================
 	
 	LDR 	R0,=OutFileName		@ set Name for output file
 	MOV 	R1,#1				@ Mode is Output	
@@ -27,10 +27,21 @@ loop:
 	LDR		R1,=OutFileHandle	@ load output file handle
 	STR		R0,[R1]				@ save the file handle
 	
+	@ ============================  Write To Output File  ==========================
+	
 	LDR 	R0,=OutFileHandle	
 	LDR		R0,[R0]				@r0 = file handle
 	LDR		R1,=HeaderMsg		@r1 = address of String
 	swi		SWI_PrStr			@write string to file
+	
+	MOV		R0,#Stdout				
+	LDR		R1, =NL				@ Print Line
+	swi		SWI_PrStr
+	
+	LDR 	R0,=OutFileHandle	
+	LDR		R0,[R0]				
+	LDR		R1,=HeaderLines		
+	swi		SWI_PrStr			
 	
 	MOV 	R0,#Stdout			@ Set mode to output
 	MOV 	R1,R3				@ Move total to R1 for output
@@ -68,7 +79,8 @@ NL:				.asciz			"\n"
 OutFileName:	.asciz 			"Outfile1.txt"
 OutFileErrorMsg:	.asciz		"Unable to open output file \n"
 	.align
-HeaderMsg:			.asciz			"\n\tNumber\t\tFactorial\t\tTime Elapsed"
+HeaderMsg:			.asciz			"\n\tNumber\t\tFactorial\t\tTime Elapsed \r\n"
+HeaderLines:		.asciz			"\t------\t\t---------\t\t------------\n"
 OutFileHandle:	.word			0
 	
 	

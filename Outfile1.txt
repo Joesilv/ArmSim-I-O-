@@ -1,2 +1,3 @@
 
-	Number		Factorial		Time Elapsed
+	Number		Factorial		Time Elapsed 
+	------		---------		------------
