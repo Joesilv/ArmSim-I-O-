@@ -30,7 +30,11 @@ loop:
 	MOV		R1,R3
 	swi		SWI_PrInt			@Print Integer
 	
-NL:		.asciz	"\n"			@new line
+NL:				.asciz			"\n"			@new line
+OutFileName:	.asciz 			"Outfile1.txt"
+OutFileError:	.asciz			"Unable to open output file \n"
+	.align
+OutFileHandle:	.word			0
 	
 	
 	
