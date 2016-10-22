@@ -38,7 +38,7 @@ loop:
 	LDR		R0,[R0]				
 	LDR		R1,=HeaderLines		
 	swi		SWI_PrStr			
-	@ ===========================  Write to Output File - Numbers  ========================
+	@ ===========================  Write to Output File - Factorial  ========================
 	
 	BL		Tabover				@ Branch to function that adds tabs
 	
@@ -47,13 +47,12 @@ loop:
 	MOV 	R1,R3				@ Move total to R1 for output
 	swi  	SWI_PrInt			@ Print
 	
-	MOV		R0,#Stdout				
-	LDR		R1, =NL				@ Print Line
-	swi		SWI_PrStr
-	
+	BL		Tabover				
+	@ ==========================  Write to Output File  -  System Time =====================
 	swi		SWI_Timer			@R0 has the execution time
 	MOV		R3,R0				@Execution time moved to R3
-	MOV		R0,#Stdout			@Mode set to output
+	LDR 	R0,=OutFileHandle	
+	LDR		R0,[R0]				@r0 = file handle
 	SUB		R3,R3,R6			@Subtract beggining and ending time, save
 	MOV		R1,R3
 	swi		SWI_PrInt			@Print Integer
