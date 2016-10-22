@@ -1,4 +1,4 @@
 
 		Number		Factorial	Time Elapsed 
 		------		---------	------------
-		5		120		24722
+		6		720		0

@@ -41,17 +41,18 @@
 	LDR		R1,=InFileHandle
 	STR		R0,[R1]
 	
+RLoop:
 	LDR 	R0,=InFileHandle
 	LDR 	R0,[r0]
 	swi		0x6c				@RdInt
-	bcs		ReadError			@if error
+	bcs		EofReached			@if error
 	
 	@----- The integer is now in r0---
 	
 	@ ==========================  Factorial Loop ===========================================
 	
 	LDR		R3,=1				@Hold value of multiplied, start at 1
-	MOV		R4,#5
+	MOV		R4,r0				@r4 holds input value
 	
 	LDR 	R0,=OutFileHandle	
 	LDR		R0,[R0]				
@@ -84,6 +85,13 @@ loop:
 	MOV		R1,R3
 	swi		SWI_PrInt			@Print Integer
 	
+	bal 	RLoop				@keep reading until end of file
+	
+EofReached:
+	MOV R0, #Stdout
+	LDR R1, =EndOfFileMsg
+	swi SWI_PrStr
+	
 	@ ================================  Close a file   ================================
 	LDR		r0,=InFileHandle
 	LDR		r0,[r0]
@@ -105,12 +113,6 @@ Tabover:
 	swi		SWI_PrStr			@write string to file
 	MOV		PC,R14				@go back to reading code above
 	
-ReadError:
-	MOV 	R0, #Stdout
-	LDR 	R1, =InFileError
-	swi		SWI_PrStr
-	bal		Exit				@Give up, go to end
-	
 OutFileError:
 	MOV 	R0, #Stdout
 	LDR 	R1, =OutFileErrorMsg
@@ -123,6 +125,7 @@ OutFileErrorMsg:	.asciz		"Unable to open output file \n"
 	.align
 InFileName:		.asciz			"Infile1.txt"
 InFileError:	.asciz			"Unable to open input file\n"
+EndOfFileMsg:	.asciz			"Reached end of input file"
 	.align
 InFileHandle:	.word			0
 HeaderMsg:			.asciz			"\n\t\tNumber\t\tFactorial\tTime Elapsed \r\n"
