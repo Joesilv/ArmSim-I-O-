@@ -127,7 +127,7 @@ InFileName:		.asciz			"Infile1.txt"
 InFileError:	.asciz			"Unable to open input file\n"
 EndOfFileMsg:	.asciz			"Reached end of input file"
 	.align
-InFileHandle:	.word			0
+InFileHandle:	.skip			4
 HeaderMsg:			.asciz			"\n\t\tNumber\t\tFactorial\tTime Elapsed \r\n"
 HeaderLines:		.asciz			"\t\t------\t\t---------\t------------\r\n"
 InsertTabs:			.asciz			"\t\t"
